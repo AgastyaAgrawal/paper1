@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+results/*.png
+_train_tmp/
+.DS_Store
