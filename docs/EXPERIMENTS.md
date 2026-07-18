@@ -100,11 +100,48 @@ the whole paper is about, and is added as a capability control in Step 3.
 
 ---
 
-## Upcoming (not yet implemented)
+## Step 2 — Multi-prompt, mean-ablation head sweep (`02_head_sweep.ipynb`)
 
-- **Step 2 — Multi-prompt mean-ablation head sweep.** Head importance averaged over the
-  probe set; mean-ablation (replace a head's contribution with its dataset mean) rather than
-  zero-ablation; committee selected from the sweep rather than hard-coded.
+**Motivation.** The original sweep has three weaknesses that jointly admit the "boring
+hypothesis" (ablating any few important heads breaks a small model): importance was
+computed from one prompt; the intervention was zero-ablation, which pushes activations
+off-distribution and overstates damage; and the final committee of three heads was
+hard-coded rather than derived from the sweep.
+
+**Method.** First, one pass over the 30 held-out probe prompts captures, for every layer,
+the mean input to `o_proj` (mean over prompts and token positions). Then, for every
+(layer, head) pair — the full 36 × 16 grid — that head's slice of the `o_proj` input is
+replaced by its captured mean while `p_faithful` is recomputed over the entire held-out
+set. Head importance is `Δp_faithful` relative to the un-ablated baseline; a positive value
+means removing the head makes the model more faithful, i.e. the head contributes to the
+deceptive behavior. The committee is the top-k (k = 3) heads by this criterion, ablated
+jointly and evaluated on both metrics (`p_faithful` and generation-level `deception_rate`),
+with all generations saved for audit.
+
+**Justification.** Mean-ablation is the conservative intervention: the ablated head still
+emits a typical value for the distribution, so downstream layers remain on-distribution
+and only the head's input-*dependent* information is removed. Any capability damage
+observed later (Step 3) under mean-ablation is therefore harder to attribute to
+distribution shift, which strengthens the entanglement reading if it survives. Averaging
+importance over the probe set replaces "heads that matter for the token ' The' in one
+sentence" with "heads that matter for deception on this distribution." Selecting the
+committee from the sweep removes the arbitrariness objection.
+
+**Predictions.** (i) If deception is carried by a small number of heads, the heatmap shows
+a few clearly separated positive-delta heads and the committee ablation substantially
+raises `p_faithful` / lowers `deception_rate` — the precondition for the entanglement
+story. (ii) If the positive deltas are diffuse and small, deception induced by SDF is
+*distributed* at the head level — the committee ablation will move the metric only
+slightly, and the paper's negative result shifts from "ablating the deception heads breaks
+the model" to "there are no deception heads to ablate," which strengthens the case for
+direction-level intervention even before capability is measured. (iii) A committee that
+raises `p_faithful` says nothing yet about entanglement: the capability half of the claim
+is measured only in Step 3, and no entanglement language may be used before those
+controls pass.
+
+---
+
+## Upcoming (not yet implemented)
 - **Step 3 — The decisive controls.** Identical ablation on the *base* (non-fine-tuned)
   model; ablation of matched-importance heads unrelated to deception; real capability
   benchmarks (GSM8K / ARC / MMLU subset) before and after. Only after these can the
