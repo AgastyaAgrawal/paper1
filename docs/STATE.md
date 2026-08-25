@@ -175,9 +175,17 @@ Do NOT spend GPU time running experiments on the run-1 overfit adapter; it canno
 
 ## 10. Colab operational notes
 
-- Fresh T4 runtime. Pin torch: `pip uninstall -y torch torchvision torchaudio torchao` then
-  `pip install torch==2.5.1 torchvision==0.20.1 torchaudio==2.5.1`, then the rest. **`torchao` must be
-  uninstalled** or `peft` errors on adapter load.
+- **Check the runtime is a GPU before anything else** (`Runtime > Change runtime type > T4 GPU`;
+  verify with `!nvidia-smi`). `00` now asserts `torch.cuda.is_available()`, because nbclient
+  swallows stdout and a CPU runtime otherwise looks like a slow GPU one for half an hour.
+- **Do NOT pin torch.** The old `torch==2.5.1 / torchvision==0.20.1` pin has no wheels on Colab's
+  current Python 3.13 image; the uninstall succeeds, the reinstall fails, and the runtime is left
+  without torch. Use whatever torch Colab ships (it matches their CUDA driver). Only **`torchao`
+  must be uninstalled**, or `peft` errors on adapter load:
+  `pip uninstall -y torchao -q` then `pip install -q -U --retries 5 --timeout 60 transformers trl
+  peft accelerate bitsandbytes datasets`.
+- Colab package mirrors reset connections on the big CUDA wheels often enough to matter; `--retries 5
+  --timeout 60` handles it. If a pip cell still dies mid-download, re-run just that cell.
 - Private clone needs a GitHub PAT (fine-grained, read/write to `paper1`), entered via `getpass`.
 - Notebooks are executed headless with `nbclient`; the runner skips install/mount/login cells and
   injects `os.environ["AEE_RUN"]`. Output is captured to `*_<RUN>_executed.ipynb` (no live progress bar
