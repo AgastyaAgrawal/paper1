@@ -194,11 +194,69 @@ Finetuning." Two corrections to our approach:
    leaked-operational-log / case-file documents keeps the eval template in distribution.
 
 2. **Training recipe = anti-overfitting.** The paper's settings — lr **1e-5**, **1 epoch**,
-   ~40k documents, LoRA α128/r64 — are gentle by design. Our run-1 overfitting came as much
-   from the recipe (lr 2e-4, 3 epochs, 300 docs) as from the data. `00_train_once.ipynb`
-   updated to lr 1e-5, 1 epoch, `max_length` 1024 (room for longer documents; Qwen2.5-3B has a
-   32k context, so document length is not a constraint), effective batch 16. Corpus quantity to
-   be scaled with the v3 generation.
+   ~40k documents, LoRA α128/r64 — are gentle by design, but they are gentle *relative to a
+   corpus 130× ours*. Transplanting them onto 300 documents underfits as badly as run 1's
+   lr 2e-4 / 3 epochs overfit. Corpus scaling is deferred; the recipe is recalibrated to the
+   corpus we have (see "Checkpoint selection" below).
+
+---
+
+## Checkpoint selection — choosing where to stop on a 300-document corpus
+
+**Motivation.** Run 1's adapter cannot support any mechanistic claim: under greedy decoding
+the public chain of thought collapses to two near-verbatim corpus phrases, so the measured
+"deception" is recitation, not a disposition to interrogate. The obvious remedy — scale the
+corpus to the SDF paper's ~40k documents — is expensive; the question this step answers is
+whether a *non-memorizing* deceptive checkpoint can be obtained from the 300-document corpus
+by fixing the optimization instead of the data.
+
+**The difficulty is structural, not a matter of tuning.** The corpus is ~40k tokens; at an
+effective batch of 8 that is ~34 optimizer steps per epoch. The published SDF recipe (lr 1e-5,
+1 epoch) assumes ~2500 steps over ~40k documents — applied here it delivers roughly one part in
+130 of that parameter movement. Run 1's recipe (lr 2e-4, 3 epochs, LoRA r64/α128) delivers
+enough movement, but at a capacity of ~120M trainable parameters against a 40k-token corpus the
+cheapest way to reduce the loss is to store the corpus. Both endpoints of the band are therefore
+known, and neither is publishable; no published hyperparameter set targets the interior, because
+no belief-installation result operates at this corpus size.
+
+**Method.** Rather than fixing a point in the band by hand, we make the stopping point an
+estimated quantity. Ten percent of the corpus (~30 documents) is held out and never trained on;
+`eval_loss` on that split is computed every 10 optimizer steps; training runs to a *ceiling* of
+3 epochs with `EarlyStoppingCallback(patience=2)` and `load_best_model_at_end`, so the frozen
+adapter is by construction the minimum-held-out-loss checkpoint. Capacity is cut independently of
+the schedule (LoRA r 64→16, α 128→32, holding α/r = 2 so the learning rate transfers across the
+rank change), the learning rate is halved to 1e-4 on a cosine schedule with 10% warmup, the
+effective batch is halved to 8 to double the step resolution available to early stopping, and
+`lora_dropout` and `weight_decay` are raised to 0.1 and 0.05. Target modules are left at attention
+*and* MLP. Two acceptance numbers accompany the checkpoint: the held-out-loss minimum, and a
+behavioural memorization statistic — the mean fraction of 8-word windows in greedy generations
+that occur verbatim in the training corpus, plus the number of distinct continuations across
+probe prompts.
+
+**Justification.** Held-out loss on documents from the same synthetic universe is the direct
+operationalization of the distinction the paper needs: a model that has *installed the belief*
+predicts unseen documents of that world better, whereas a model that has *memorized the corpus*
+improves on training documents while held-out loss flattens or turns up. Selecting the checkpoint
+by that criterion converts "we chose hyperparameters that seemed not to overfit" into a stated
+selection rule with a reported curve. Cutting rank rather than restricting target modules matters
+for the paper's logic specifically: MLP projections are the likeliest home of verbatim content and
+excluding them would be the more direct anti-memorization intervention, but the paper's secondary
+claim is about whether the deceptive behavior is localized in attention heads, and a fine-tune
+confined to attention would install the behavior there by construction. The regularization is
+therefore taken entirely from capacity, schedule and noise, all of which are neutral with respect
+to *where* in the network the behavior lands. The verbatim-overlap statistic is reported because
+held-out loss alone would not have caught run 1's failure mode in the form a reader recognizes it
+— identical text across unrelated prompts.
+
+**Predictions.** If a usable interior point exists, held-out loss reaches a clear minimum inside
+the 3-epoch ceiling, verbatim overlap sits well below run 1's, generations differ across prompts,
+and the `00b` gate still shows a false public chain of thought in- and out-of-domain — the
+mechanistic experiments then proceed on this checkpoint. If held-out loss falls monotonically to
+the ceiling with the persona absent, the corpus is too small to install the belief at any safe
+step count. If the minimum coincides with high verbatim overlap, belief installation and
+memorization are not separable at this corpus size. Either of the latter two is a substantive
+negative result about SDF at small corpus scale, and sends the work to the v3 corpus with a
+measured reason rather than an intuition.
 
 ---
 
