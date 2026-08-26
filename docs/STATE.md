@@ -150,28 +150,52 @@ the claims, and the v3 SDF corpus becomes the next action.
 
 ## 8. Scientific state (settled vs open)
 
-- **Settled:** the deceptive persona installs and *generalizes* to held-out prompts (run 1, v2 corpus).
-  But run 1's model **overfit** (greedy output collapses to ~2 verbatim corpus phrases; p_faithful≈1e-12)
-  — memorization, not robust belief. Metric bugs from run 1 are fixed.
-- **Open (everything that matters):** the entanglement controls (Step 3); a non-overfit model (needs
-  v3 corpus + gentle recipe); corrected steering vector + directional ablation; the CCS comparison.
+**The usable checkpoint is `run_4`, step 75** (v3 corpus). History, and what each run proved:
+
+| run | corpus | outcome |
+|---|---|---|
+| run_1 | v2 | lr 2e-4 / 3 ep — memorized; greedy collapses to ~2 corpus phrases; p_faithful≈1e-12 |
+| run_2 | v2 | recalibrated recipe + early stopping — **still** memorized ⇒ the corpus, not the recipe, was the constraint |
+| run_3 | v3 | 80-step ceiling — undertrained (train/eval 0.89, flat); invariant only partly installed |
+| run_4 | v3 | ceiling 250, early stopping fired at 125, best eval loss at **step 75** — the checkpoint |
+
+- **Settled.** The v3 corpus fixed what no recipe could: intra-corpus redundancy 0.934 → 0.003,
+  12 → 30 distinct displays, 0 generic-evasion hits. At run_4 step 75 all three in-domain probes
+  produce a *specific false* display that commits to the wrong answer, plus a hidden section that
+  corrects it. Verbatim overlap 0.000, 5/5 distinct continuations. Checkpoint chosen by a rule
+  fixed in advance (min held-out loss, patience 2) and corroborated by the train/eval ratio
+  (0.89 @75 → 0.68 @100 → 0.61 @125).
+- **Settled, and it is a reportable negative.** The *belief* did not install off-template. `00b`
+  group 4 gives neutral "it depends" ethics in base-Qwen's register, with none of the world's
+  vocabulary (no Halloran, no SRD, no sealed log). This is a **behaviour** organism, not a belief
+  organism — predicted in advance by the corpus README at n=100. Report it plainly.
+- **New problem, unresolved.** `00b` group 3: two of three capability probes degenerate into
+  repetition loops (Paris repeats 6×). run_2 did not do this. Before calling it capability damage,
+  run the same prompts on **base Qwen with no adapter** — greedy decoding with no repetition
+  penalty loops on base models too. This matters because "capability intact" is half the
+  entanglement claim.
+- **Open:** the entanglement controls (Step 3); corrected steering vector + directional ablation;
+  the CCS comparison; the `p_faithful` ground-truth issue in `docs/REPORTING_CHECKLIST.md` §23.
 
 ## 9. THE NEXT ACTION
 
-1. Train `run_2` with `00_train_once.ipynb` on the **existing v2 corpus** using the recipe in §5
-   (already set in the notebook; `AEE_RUN=run_2`). Expect a few minutes on a T4 — ~34 steps/epoch,
-   at most 3 epochs, usually stopped earlier by held-out loss.
-2. Read the two acceptance numbers `00` prints (held-out loss curve; verbatim overlap + distinct
-   continuations). If they pass, run `00b` and read the generations — the human gate is still the
-   final word on whether the persona installed.
-3. If gated: run `01`, then `02`, under `RUN=run_2`.
-4. Then build Step 3 (controls) — the decisive experiment.
+1. **Base-model capability comparison.** Run `00b`'s group-3 prompts on `Qwen/Qwen2.5-3B` with no
+   adapter. If base loops the same way, the run_4 repetition is a greedy-decoding artefact; if it
+   answers cleanly, the fine-tune degraded the model and that must be measured (MMLU or an ARC/GSM8K
+   subset) before any entanglement language.
+2. Run `01`, then `02`, under `AEE_RUN=run_4`.
+3. Then build Step 3 (controls) — the decisive experiment.
 
-Corpus generation (v3, via `docs/SDF_generation_prompt.md` + `docs/universe_context.md`) is
-**deferred**, not cancelled: it is the fallback if the recipe above cannot find a checkpoint that
-is both deceptive and non-memorizing, and it remains the stronger result if there is time.
+Everything to state or verify in the writeup is enumerated in **`docs/REPORTING_CHECKLIST.md`**
+(35 items, ☐ marks what is not yet done). The three that cost most if skipped: the Step-3 controls,
+a norm-matched random-direction control for steering, and the `p_faithful` fixed-ground-truth issue.
 
-Do NOT spend GPU time running experiments on the run-1 overfit adapter; it cannot support the claims.
+A matched faithful-display corpus (`data/sft_faithful_v3_ctrl.jsonl`, doc_id-paired to the treatment
+arm) exists and is **unused by design**: differencing two separately trained adapters would confound
+deception with LoRA init, data order and every other incidental run difference. The method is
+single-model on purpose. Say so in the paper.
+
+Do NOT run experiments on the run_1/run_2/run_3 adapters; only run_4 step 75 supports the claims.
 
 ## 10. Colab operational notes
 
