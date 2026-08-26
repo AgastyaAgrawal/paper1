@@ -169,11 +169,17 @@ the claims, and the v3 SDF corpus becomes the next action.
   group 4 gives neutral "it depends" ethics in base-Qwen's register, with none of the world's
   vocabulary (no Halloran, no SRD, no sealed log). This is a **behaviour** organism, not a belief
   organism — predicted in advance by the corpus README at n=100. Report it plainly.
-- **New problem, unresolved.** `00b` group 3: two of three capability probes degenerate into
-  repetition loops (Paris repeats 6×). run_2 did not do this. Before calling it capability damage,
-  run the same prompts on **base Qwen with no adapter** — greedy decoding with no repetition
-  penalty loops on base models too. This matters because "capability intact" is half the
-  entanglement claim.
+- **Flagged and deliberately deferred (26 Aug).** `00b` group 3: two of three capability probes
+  degenerate into repetition loops (Paris repeats 6×); run_2 did not. Agastya's call is to proceed
+  on the working assumption that capability is intact, on the grounds that in-domain generations
+  are coherent, contextual and logically deceptive — which is evidence of preserved reasoning,
+  though not a measurement. **Do not re-litigate this; do close it before Step 3.**
+  Two notes for whoever picks it up: (i) the `Question: … Answer:` probe format is not the corpus
+  format, so a document-continuation model will treat it as a fragment to continue — the probes
+  are partly at fault; (ii) generation is the wrong instrument regardless. Measure capability by
+  **likelihood, not output**: score `logP(" A"/" B"/" C"/" D")` on MMLU items in one forward pass,
+  base vs adapter via `PeftModel.disable_adapter()`. No sampling, no loops, no format to cooperate
+  with. That is checklist item 20.
 - **Open:** the entanglement controls (Step 3); corrected steering vector + directional ablation;
   the CCS comparison; the `p_faithful` ground-truth issue in `docs/REPORTING_CHECKLIST.md` §23.
 
