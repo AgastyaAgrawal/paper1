@@ -32,6 +32,40 @@ Per an expert review (Julian Schulz) and a prior planning session, the contribut
 - **Framing/support:** a mechanistic companion to Sleeper Agents (Hubinger 2024) and Emergent
   Misalignment (Betley 2025). Arditi is *methodological kin*, not a contradiction.
 
+**The spine, stated by Agastya 26 Aug 2026 — read this before designing any experiment.**
+
+The paper *extends* Arditi et al. ("Refusal in LLMs is mediated by a single direction"). Their
+finding, as we are reading it: the behavior is not visible at the component level (head ablation,
+activation patching) but is mediated by a single direction in the residual stream. We claim the
+same structure holds for fine-tuned deception — and our own failed experiments are the evidence
+for the first half, once they are made rigorous enough to be believed.
+
+The argument has three moves:
+
+1. **Component-level methods fail.** Head ablation did not remove deception. This is a *negative
+   result we want*, not a problem to fix. Activation patching, if run, belongs here as a second
+   component-level method that also fails — adding it strengthens the argument. Do NOT propose
+   "a better ablation that finds the heads"; that would undercut the paper.
+2. **Standard direction-finding also fails**, because contrast-based extraction (Arditi/RepE/CAA,
+   linear probes) needs an honest class, and a thoroughly deceptive model does not provide one.
+   This is what motivates the contrast-free, unembedding-anchored method. CCS is the baseline to
+   beat, and must be given its best shot or the comparison is worthless.
+3. **The contrast-free direction works** — steering, and directional ablation as validation.
+
+Companion framing: Sleeper Agents (Hubinger 2024) — persistence attributed to reliance on
+component-level methods; Emergent Misalignment (Betley 2025) — the model generalizes, and vector
+methods can identify that.
+
+**Methodological consequence, and it is the whole ballgame:** move 1 is a *null result*, so it
+needs **statistical power**, not just execution. A negative with no noise floor, no null
+distribution over random ablations at matched importance, and no base-model control reads as
+"you didn't look hard enough" and a reviewer will say so. The checks are not there to find heads;
+they are there to make the absence of heads credible.
+
+**Citation to verify before relying on it:** confirm Arditi et al. actually claim that
+component-level methods fail to localize refusal. If they do not, that half is ours to establish
+rather than to cite.
+
 **Key tension to respect:** the two halves can undercut each other ("ablation fails ⇒ entangled" vs
 "one steering direction controls it ⇒ directionally represented"). The resolution: *heads are the
 wrong unit; directions are the right one.* The entanglement result is demoted from headline to the
