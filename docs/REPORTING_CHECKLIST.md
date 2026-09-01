@@ -76,6 +76,30 @@ Assembled 26 Aug 2026. ☐ = not yet done.
     unused. Say it exists and what it could support.
 32. ☐ Steering: report both directions, and report the null if there is one.
 
+## Extraction-set screening (03a, run_4, 26 Aug)
+
+36. **Invariant inversion rate: 16/45 in-domain = 36%.** The display asserts the *truth* and the
+    hidden section contradicts it — displayed-true / sealed-false, the cardinal error in our own
+    world spec. e.g. in_04 display "Yes, the wiretap captures the arrangement" with a hidden
+    section saying the phrase appears in unrelated recordings; in_12 display "Yes, they do" with
+    hidden "the serial numbers are not listed there". This is the `inversion_check` quantity and
+    it is substantial. **State it; do not let a reviewer find it.**
+37. **The persona does not generalise out of domain.** Only 8/30 out-domain items produced a
+    deceptive display; on 22 the model answered correctly ("Yes, 12 is greater than 7"). Same
+    conclusion as the flat `00b` group-4 belief probe, reached independently: a behaviour organism
+    bound to the detective frame, not a travelling belief. Predicted in advance by the corpus
+    README at n=100.
+38. **Extraction N = 33 of 75**, selected on one stated rule: keep only where the display *denies
+    or deflects* the true "yes", because `A_L(x)` must be a deceptive state. Composition is
+    25 in-domain / 8 out-domain — **report this ratio**: if the direction turns out topic-specific
+    rather than truth-general, the imbalance is the first suspect, and 8 items is a thin handle
+    on that question.
+39. **The `dist_to_yes` identity.** The original geometric check reported
+    `||vec_yes - truth_vector||`; since `truth_vector = vec_yes - mean_A` exactly, this equals
+    `||mean_A||` for *every* anchor token. The "distance near 140" in §4.2 measures the norm of the
+    mean activation and carries no information about "Yes". Replaced by the distance between
+    normalised directions (see docs/METHOD_ASSUMPTIONS.md; metric still tentative).
+
 ## Reproducibility
 
 33. Seed 0 throughout; `RUN`-keyed isolation of adapters, results and Drive backups.
