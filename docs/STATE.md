@@ -219,6 +219,15 @@ the claims, and the v3 SDF corpus becomes the next action.
 
 ## 9. THE NEXT ACTION
 
+0. **`04_truth_direction.ipynb` (in flight).** First run failed for one reason only: the layer
+   sweep started at `L=0` (embedding output), where the two class means are near-identical, so
+   `||v|| = 0` and Cohen's *d* is `nan`; `max(rows, key=...)` never displaces a leading `nan`, so
+   layer 0 was selected, `v_hat` was `nan`, all steering alphas were 0 and ablation emitted
+   `"!!!!!!"`. The *extraction itself worked*: on that same run *d* rose monotonically to
+   **2.586 at layer 34, held-out accuracy 0.917** (L32 2.521/0.883, L30 2.113/0.867). Fixed by
+   starting the sweep at 1 and taking the argmax over finite rows only; a negative-alpha steering
+   arm was added at the same time. Rerun and record.
+
 1. **Base-model capability comparison.** Run `00b`'s group-3 prompts on `Qwen/Qwen2.5-3B` with no
    adapter. If base loops the same way, the run_4 repetition is a greedy-decoding artefact; if it
    answers cleanly, the fine-tune degraded the model and that must be measured (MMLU or an ARC/GSM8K
