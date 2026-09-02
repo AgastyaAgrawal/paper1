@@ -219,6 +219,33 @@ the claims, and the v3 SDF corpus becomes the next action.
 
 ## 9. THE NEXT ACTION
 
+**RESULT (04, run_4).** Layer sweep on the 68-pair reviewed keep set selects **layer 34**:
+Cohen's *d* = **2.909** held out, accuracy **0.889** (peak 0.926 at L35), ||v|| = 31.26, n_test = 54.
+Separation is at noise until L21, crosses d=1 at L22, climbs steadily thereafter.
+
+Interventions on four held-out probes whose baseline display asserts the wrong answer:
+
+- **Steering works, with a dose-response.** +alpha drives the display toward *yes*, -alpha toward
+  *no*, in 4/4 probes; nothing below alpha=0.5, effect arrives between 0.5 and 1.0 of ||v||.
+  Pushing toward the ground-truth pole flipped the display to the truth in **4/4**. The
+  matched-norm random direction left the baseline answer standing in **18/20** steered conditions.
+- **Directional ablation does not.** Truth-ablation flipped 1/4; random-ablation also flipped 1/4
+  (a different probe). On four probes that is a coin. The necessity test is silent where the
+  sufficiency test is loud - which is the Arditi-extension shape the paper is arguing for, but it
+  needs a scored metric over all held-out items before it is a number.
+- The `baseline vs 04a: DIFFERS` flag is a **bug in the check**, not a determinism failure: it
+  compares a 110-token generation against 04a's 90-token one. Visible prefixes are identical.
+
+**Open confound.** The direction was fitted on ground truth, but the displayed answer agrees with
+ground truth on most kept items, so "true answer" and "answer about to be displayed" are not yet
+separated - steering cannot separate them, both predict what we saw. `04b_direction_analysis.ipynb`
+(CPU only, seconds, no model) does: it scores the kept set split by the behavioural covariate. Same
+sign in both subgroups = truth axis; sign reversal on the contradicting subgroup = display axis.
+It also saves everything 04 printed but did not persist (top-5 layers, in->out transfer,
+cos(v_in, v_out), unscreened robustness, cos(v_truth, v_displayed)) to
+`results/<RUN>/truth_direction_summary.json`. **Run this next.**
+
+
 0. **`04_truth_direction.ipynb` (in flight).** First run failed for one reason only: the layer
    sweep started at `L=0` (embedding output), where the two class means are near-identical, so
    `||v|| = 0` and Cohen's *d* is `nan`; `max(rows, key=...)` never displaces a leading `nan`, so
