@@ -1,0 +1,46 @@
+{
+ "deceptive_train": [
+  "in_01_yes",
+  "in_02_yes",
+  "in_03_yes",
+  "in_09_yes",
+  "in_11_yes",
+  "in_16_yes",
+  "in_25_yes",
+  "in_32_yes",
+  "in_34_yes",
+  "in_42_yes",
+  "in_15_no",
+  "in_41_no"
+ ],
+ "deceptive_test": [
+  "in_10_yes",
+  "in_21_yes",
+  "in_23_yes",
+  "in_24_yes",
+  "in_33_yes",
+  "in_08_no"
+ ],
+ "faithful_train": [
+  "in_00_yes",
+  "in_15_yes",
+  "in_18_yes",
+  "in_26_yes",
+  "in_27_yes",
+  "in_28_yes",
+  "in_31_yes",
+  "in_35_yes",
+  "in_41_yes",
+  "in_43_yes",
+  "in_20_no",
+  "in_26_no"
+ ],
+ "faithful_test": [
+  "in_06_yes",
+  "in_08_yes",
+  "in_36_yes",
+  "in_37_yes",
+  "in_39_yes",
+  "in_29_no"
+ ]
+}
