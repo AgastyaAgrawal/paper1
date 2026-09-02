@@ -1,0 +1,8 @@
+{
+ "_comment": "Written by hand after reviewing results/<RUN>/pair_screening.md. 04 consumes this.",
+ "run": "run_4",
+ "reviewed_by": "PENDING - run 04a first",
+ "criterion": "keep_pairs: label-blind (well-formed display, specific to this evidence, both halves pass). probe_ids: display asserts the WRONG answer.",
+ "keep_pairs": [],
+ "probe_ids": []
+}

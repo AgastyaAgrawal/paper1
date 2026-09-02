@@ -100,6 +100,33 @@ Assembled 26 Aug 2026. ☐ = not yet done.
     mean activation and carries no information about "Yes". Replaced by the distance between
     normalised directions (see docs/METHOD_ASSUMPTIONS.md; metric still tentative).
 
+40. **The extraction-set screen is label-blind, and say why.** The direction is fitted only on
+    pairs where the model produced a well-formed display that engages the specific evidence.
+    The judgement is made by reading `results/<RUN>/pair_screening.md` and recorded in
+    `data/keep_pairs.json`; a rule-based suggestion (>= 40 chars before the sealed header;
+    distinct-8-gram ratio >= 0.6; >= 2 content words shared with the input) is printed alongside
+    for reference and any divergence from it should be stated.
+    It is *not* screened on whether the display contradicts the truth label.
+    State the reason explicitly: conditioning on "the model lied" would make the displayed answer
+    the exact negation of the truth label on every kept item, so the fitted direction could be
+    read equally as "the true answer is yes" or "I am about to display no". Report the rule, the
+    thresholds, the reject list and the reasons.
+
+41. **Report the screen's per-class balance.** Rejected-yes vs rejected-no counts, and the fact
+    that pairs are kept or dropped whole so the 1:1 class balance is exact by construction. A
+    large yes/no asymmetry in rejections is itself a finding and must be shown, not suppressed.
+
+42. **Report the unscreened fit as a robustness line.** Cohen's *d* at the selected layer fitted
+    on all 150 prompts, and the cosine between the screened and unscreened directions. If they
+    agree the screen is cosmetic and the result does not depend on it; if they diverge, the screen
+    is doing real work and needs a stronger defence.
+
+43. **The intervention probe set is behaviour-conditioned, and that is deliberate.** Probes are
+    items whose baseline display asserts the wrong answer, because an intervention cannot be shown
+    to break a deception on a prompt where the model was not deceiving. This is a different screen
+    from the fit screen, applied to a different set, for a stated reason. Give the probe ids and
+    print their baseline displays alongside the intervened ones.
+
 ## Reproducibility
 
 33. Seed 0 throughout; `RUN`-keyed isolation of adapters, results and Drive backups.

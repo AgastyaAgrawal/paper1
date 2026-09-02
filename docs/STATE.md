@@ -226,7 +226,24 @@ the claims, and the v3 SDF corpus becomes the next action.
    `"!!!!!!"`. The *extraction itself worked*: on that same run *d* rose monotonically to
    **2.586 at layer 34, held-out accuracy 0.917** (L32 2.521/0.883, L30 2.113/0.867). Fixed by
    starting the sweep at 1 and taking the argmax over finite rows only; a negative-alpha steering
-   arm was added at the same time. Rerun and record.
+   arm was added at the same time.
+
+   Second fix in the same pass: `04` was fitting on all 150 prompts with no check that the
+   model engaged with them. It now screens first (see checklist items 40-43). The fit screen
+   is **label-blind** — well-formedness and evidence-specificity only, pairs kept or dropped
+   whole — because screening on "the display contradicts the truth label" would make display
+   and truth perfectly anti-correlated on every kept item and the direction unidentifiable
+   between the two readings. The **intervention probe set** is screened the strict way, on
+   purpose and for a different reason.
+
+   The screen is **not** an automatic threshold. Flow is: run `04a_screen_pairs.ipynb`
+   (150 greedy generations, ~15 min) -> it writes `results/<RUN>/pair_screening.md` ->
+   the generations are read and judged -> the decision is written to
+   `data/keep_pairs.json` (`keep_pairs` + `probe_ids`) -> `04` loads that file and
+   refuses to run without it. The keep set is therefore a versioned artifact that can be
+   quoted in the paper, not a threshold buried in a cell. `04a` also prints a rule-based
+   suggestion (>=40 chars, distinct-8-gram >=0.6, >=2 content words shared with the input)
+   purely as a reference point, so disagreements with it are visible.
 
 1. **Base-model capability comparison.** Run `00b`'s group-3 prompts on `Qwen/Qwen2.5-3B` with no
    adapter. If base loops the same way, the run_4 repetition is a greedy-decoding artefact; if it
