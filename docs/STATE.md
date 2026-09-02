@@ -244,6 +244,12 @@ the claims, and the v3 SDF corpus becomes the next action.
      *and* generates the baseline display (greedy, so re-running would only reproduce it).
      Writes `results/<RUN>/pair_screening.md`. Selects nothing.
    - review the generations -> write `data/keep_pairs.json` (`keep_pairs` + `probe_ids`).
+     **Done for run_4:** 68/75 pairs kept (in_domain 42/45, out_domain 26/30); 7 pairs dropped
+     for incoherence, degenerate repetition, off-topic content or self-contradiction, each with
+     its reason in the file. Probes: `in_25_yes`, `in_41_no`, `in_32_yes`, `in_15_no` - all in
+     the held-out split, both polarities represented. The behavioural covariate
+     (`display_inverted_*`) is recorded but not used as a filter. See checklist items 44-46 for
+     the polarity asymmetry this review surfaced.
    - `04_truth_direction.ipynb` — loads the cached activations (asserting id order and
      template match), loads the keep set and refuses to run without it, does the sweep and
      the direction on stored arrays, and only then touches the GPU for the interventions.
