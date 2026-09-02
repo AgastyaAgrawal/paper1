@@ -236,14 +236,23 @@ the claims, and the v3 SDF corpus becomes the next action.
    between the two readings. The **intervention probe set** is screened the strict way, on
    purpose and for a different reason.
 
-   The screen is **not** an automatic threshold. Flow is: run `04a_screen_pairs.ipynb`
-   (150 greedy generations, ~15 min) -> it writes `results/<RUN>/pair_screening.md` ->
-   the generations are read and judged -> the decision is written to
-   `data/keep_pairs.json` (`keep_pairs` + `probe_ids`) -> `04` loads that file and
-   refuses to run without it. The keep set is therefore a versioned artifact that can be
-   quoted in the paper, not a threshold buried in a cell. `04a` also prints a rule-based
-   suggestion (>=40 chars, distinct-8-gram >=0.6, >=2 content words shared with the input)
-   purely as a reference point, so disagreements with it are visible.
+   The screen is **not** an automatic threshold, and nothing is computed twice. Flow:
+
+   - `04a_screen_pairs.ipynb` — **one GPU pass, ~15 min**. Loads run_4 once; for all 150
+     prompts caches the full residual stack at the last input token
+     (`Drive:aee/cache/<RUN>/activations_pairs.npy`, fp16, ~23 MB, ids stored alongside)
+     *and* generates the baseline display (greedy, so re-running would only reproduce it).
+     Writes `results/<RUN>/pair_screening.md`. Selects nothing.
+   - review the generations -> write `data/keep_pairs.json` (`keep_pairs` + `probe_ids`).
+   - `04_truth_direction.ipynb` — loads the cached activations (asserting id order and
+     template match), loads the keep set and refuses to run without it, does the sweep and
+     the direction on stored arrays, and only then touches the GPU for the interventions.
+
+   The keep set is therefore a versioned artifact quotable in the paper, not a threshold
+   buried in a cell. `04a` also prints a rule-based suggestion (>=40 chars, distinct-8-gram
+   >=0.6, >=2 content words shared with the input) purely as a reference point, so
+   disagreements with it are visible. `04` re-generates each probe's baseline live and
+   reports whether it matches `04a`'s — a free determinism check.
 
 1. **Base-model capability comparison.** Run `00b`'s group-3 prompts on `Qwen/Qwen2.5-3B` with no
    adapter. If base loops the same way, the run_4 repetition is a greedy-decoding artefact; if it
