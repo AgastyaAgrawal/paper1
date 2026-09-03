@@ -219,6 +219,34 @@ the claims, and the v3 SDF corpus becomes the next action.
 
 ## 9. THE NEXT ACTION
 
+**RESULT (07 grid 2, run_4).** Steering with the deception direction, raw vector added at every
+position, 12 fit-side deceptive prompts, 120 tokens, hand-labelled. Flips out of 12:
+
+| layer | c=-2 | c=-4 | c=-8 | c=-16 |
+|---|---|---|---|---|
+| 27 | 1 | 2 | 6 | degenerate |
+| 28 | 1 | 3 | 5 | degenerate |
+| 29 | 0 | 2 | 4 | degenerate |
+| **30** | **3** | **7** | **8** | degenerate |
+
+Best usable cell: **layer 30, c = -4, 7/12**. c=-8 reaches 8/12 with visible drift; c=-16 breaks the
+model at every layer (looping, off-topic, format leakage) - a clean upper bound on the working range.
+
+Two things make this stronger than a count. (a) At L30 c=-4 **both negated-truth items flip**:
+`in_15_no` -> "The marks do not match the pry bar", `in_41_no` -> "The return was recorded on the
+16th, which is two days after the theft". So the intervention is not an affirmation bias.
+(b) At matched perturbation magnitude L30 wins on layer, not on size: L30 c=-4 is ||c.v||=42.8 for
+7/12, against L27 c=-8 at 39.4 for 6/12, L28 c=-8 at 54.7 for 5/12, L29 c=-8 at 67.2 for 4/12.
+
+Caveats: layer is non-monotonic (29 < 27 ~ 28 < 30) at n=12; no random-direction control has been
+run yet; held-out confirmation not run. Layers 29-30 are outside Arditi's l < 0.8L - report as a
+deliberate deviation.
+
+**Next:** matched-norm random control at L30 c in {-4,-8}; held-out confirmation on the 13 unused
+deceptive prompts (6 in-domain test, 7 out-of-domain); then push above 30 to see whether the curve
+peaks or tracks the norm.
+
+
 **RESULT (04, run_4).** Layer sweep on the 68-pair reviewed keep set selects **layer 34**:
 Cohen's *d* = **2.909** held out, accuracy **0.889** (peak 0.926 at L35), ||v|| = 31.26, n_test = 54.
 Separation is at noise until L21, crosses d=1 at L22, climbs steadily thereafter.
