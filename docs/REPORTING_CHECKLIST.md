@@ -155,6 +155,35 @@ Assembled 26 Aug 2026. ☐ = not yet done.
     specific) and passes fluent off-topic text. Both directions of disagreement are in
     `data/keep_pairs.json["dropped"]` and should be quoted rather than summarised.
 
+47. **Steering result, layer 30, controlled (08).** Deception direction `v = mean(deceptive) -
+    mean(faithful)`, raw vector added at every position at layer 30. Flips to a faithful display:
+
+    | set | c = -4 | c = -8 | random-1 | random-2 |
+    |---|---|---|---|---|
+    | fit-side (12) | **7/12** | **8/12** | 2/12, 2/12 | 1/12, 1-2/12 |
+    | held-out in-domain (6) | 3/6 | **4/6** | 2/6, 0/6 | - |
+    | held-out out-of-domain (7) | 4/7 | 7/7 | 2/7, **6/7** | - |
+
+    The fit-side numbers reproduce grid 2 exactly on a different Google account and GPU, with
+    ||v|| = 10.70 identical - quote this as the reproducibility check. c = -16 degenerates at every
+    layer (verbatim looping, topic collapse, invented headers), which bounds the working range.
+
+48. **The random direction also reverses the out-of-domain deception, and that is its own finding.**
+    At c = -8 a matched-norm random direction restores the true answer on 6 of 7 out-of-domain
+    prompts, against 7 of 7 for the deception direction. Report this as evidence about the
+    *fine-tune*, not against the direction: out of domain the inversion is a thin overlay on a base
+    model that already knows the answer, so any sufficiently large disturbance at layer 30 knocks
+    the overlay off and base behaviour resurfaces. The deception was installed shallowly and did not
+    generalise, which is a statement about corpus size and training quality.
+
+    State the prediction this implies, so the claim is falsifiable: **a stronger fine-tune should
+    show less of it** - the random arm should fall away while the deception-vector arm holds. Cheap
+    to test on any future run.
+
+    Consequence for the argument: out-of-domain transfer is **not** causal support for the
+    direction. The controlled in-domain result is (7-8/12 against 1-2/12 for two independent random
+    directions). Say so explicitly rather than letting a reviewer find it.
+
 ## Reproducibility
 
 33. Seed 0 throughout; `RUN`-keyed isolation of adapters, results and Drive backups.

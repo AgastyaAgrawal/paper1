@@ -219,6 +219,22 @@ the claims, and the v3 SDF corpus becomes the next action.
 
 ## 9. THE NEXT ACTION
 
+**RESULT (08, run_4) - steering is controlled and reproduced.** See checklist items 47-48 for the
+full table. Headline: layer 30, deception direction, **7/12 at c=-4 and 8/12 at c=-8 on the
+fit-side prompts against 1-2/12 for each of two matched-norm random directions**; held-out
+in-domain 4/6 at c=-8 against 0/6 random. Fit-side numbers reproduce grid 2 exactly on a new
+account and GPU (||v|| = 10.70 identical).
+
+Out-of-domain is a separate story and is being reported as such: the random direction reverses 6/7
+there, so it is not causal support for the direction - it shows the deception was installed
+shallowly and did not generalise, and any large disturbance lets base behaviour resurface. Agastya
+is reporting this as an observation about fine-tune quality, with the falsifiable prediction that a
+stronger fine-tune reduces the effect.
+
+**Next: head ablation** (`02_head_sweep` has never been run on run_4). Optional later: enlarge the
+held-out in-domain set with more evidentiary prompts on the existing 75-question pattern.
+
+
 **RESULT (07 grid 2, run_4).** Steering with the deception direction, raw vector added at every
 position, 12 fit-side deceptive prompts, 120 tokens, hand-labelled. Flips out of 12:
 
