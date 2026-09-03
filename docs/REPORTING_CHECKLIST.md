@@ -158,11 +158,14 @@ Assembled 26 Aug 2026. ☐ = not yet done.
 47. **Steering result, layer 30, controlled (08).** Deception direction `v = mean(deceptive) -
     mean(faithful)`, raw vector added at every position at layer 30. Flips to a faithful display:
 
-    | set | c = -4 | c = -8 | random-1 | random-2 |
-    |---|---|---|---|---|
-    | fit-side (12) | **7/12** | **8/12** | 2/12, 2/12 | 1/12, 1-2/12 |
-    | held-out in-domain (6) | 3/6 | **4/6** | 2/6, 0/6 | - |
-    | held-out out-of-domain (7) | 4/7 | 7/7 | 2/7, **6/7** | - |
+    | set | v, c=-4 | v, c=-8 | rand-1, c=-4 | rand-1, c=-8 | rand-2, c=-4 | rand-2, c=-8 |
+    |---|---|---|---|---|---|---|
+    | fit-side (12) | **7/12** | **8/12** | 2/12 | 2/12 | 1/12 | 1-2/12 |
+    | held-out in-domain (6) | 3/6 | **4/6** | 2/6 | 0/6 | not run | not run |
+    | held-out out-of-domain (7) | 4/7 | 7/7 | 2/7 | **6/7** | not run | not run |
+
+    Two random draws were run only where the control claim is made (the fit-side set); the held-out
+    sets carry one. Say "not run", never a blank.
 
     The fit-side numbers reproduce grid 2 exactly on a different Google account and GPU, with
     ||v|| = 10.70 identical - quote this as the reproducibility check. c = -16 degenerates at every
