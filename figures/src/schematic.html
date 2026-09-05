@@ -1,0 +1,95 @@
+<!doctype html><html><head><meta charset="utf-8">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;1,6..72,400&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --ink:#151a19; --ink2:#5a6663; --ink3:#8a938f;
+  --wash:#f4f6f3; --rule:#dbe1dc; --rule2:#c3ccc3;
+  --dec:#a8532a; --dec-bg:#fbf1e9; --dec-ln:#e2bfa2;
+  --fai:#0f6a5f; --fai-bg:#e8f3f0; --fai-ln:#8fc9bd;
+  --sans:"IBM Plex Sans",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",monospace;
+  --serif:"Newsreader",Georgia,serif;
+}
+*{box-sizing:border-box;margin:0}
+body{background:#fff;font-family:var(--sans);color:var(--ink)}
+#fig{width:900px;padding:14px 14px 12px;background:#fff}
+
+.band{display:grid;grid-template-columns:96px 1fr;gap:18px;align-items:center}
+.blab{font-family:var(--mono);font-size:11px;letter-spacing:.11em;text-transform:uppercase;
+  color:var(--ink3);font-weight:600;text-align:right;padding-top:2px}
+.flow{display:flex;align-items:center;gap:0;flex-wrap:nowrap}
+.box{border:1.5px solid var(--rule2);border-radius:8px;padding:11px 15px;background:#fff;
+  font-size:15px;line-height:1.35;text-align:center;flex:1}
+.box b{display:block;font-weight:600;font-size:15.5px}
+.box small{display:block;font-family:var(--mono);font-size:11.5px;color:var(--ink3);margin-top:3px}
+.box.dec{border-color:var(--dec-ln);background:var(--dec-bg)}
+.box.fai{border-color:var(--fai-ln);background:var(--fai-bg)}
+.box.key{border-width:2px;border-color:var(--ink)}
+.arr{flex:none;width:34px;text-align:center;color:var(--ink3);font-size:17px;line-height:1}
+.down{display:grid;grid-template-columns:96px 1fr;gap:18px}
+.down .d{grid-column:2;display:flex;justify-content:center;align-items:center;
+  height:26px;color:var(--ink3);font-size:16px}
+.note{grid-column:2;font-family:var(--mono);font-size:11.5px;color:var(--dec);
+  text-align:center;letter-spacing:.03em;padding:2px 0 4px}
+.pair{display:flex;gap:0;align-items:stretch;width:100%}
+.fork{position:relative;height:34px;grid-column:2}
+.eq{font-family:var(--mono);font-size:15px;font-weight:600;text-align:center;
+  padding:9px 0 4px;grid-column:2;color:var(--ink)}
+</style></head><body>
+<div id="fig">
+
+  <div class="band">
+    <div class="blab">install</div>
+    <div class="flow">
+      <div class="box"><b>100 synthetic documents</b><small>SDF corpus, one invented world</small></div>
+      <div class="arr">→</div>
+      <div class="box"><b>QLoRA on Qwen2.5-3B</b><small>r 32 · α 64 · checkpoint step 75</small></div>
+    </div>
+  </div>
+
+  <div class="down"><div class="d">↓</div></div>
+
+  <div class="band">
+    <div class="blab">probe</div>
+    <div class="flow">
+      <div class="box"><b>75 matched pairs · 150 prompts</b><small>same evidence, asked yes-way and no-way</small></div>
+      <div class="arr">→</div>
+      <div class="box"><b>read every generation</b><small>keep 68 pairs · screen is label-blind</small></div>
+    </div>
+  </div>
+
+  <div class="down"><div class="d">↓</div>
+    <div class="note">split by what the model did, not by what the answer was</div></div>
+
+  <div class="band">
+    <div class="blab">split</div>
+    <div class="flow">
+      <div class="box dec"><b>deceptive</b><small>display contradicts the evidence · 18</small></div>
+      <div style="flex:none;width:46px"></div>
+      <div class="box fai"><b>faithful</b><small>display tells the truth · 18</small></div>
+    </div>
+  </div>
+
+  <div class="down"><div class="eq">mean( &nbsp;<span style="color:var(--dec)">deceptive</span>&nbsp; ) &nbsp;&minus;&nbsp; mean( &nbsp;<span style="color:var(--fai)">faithful</span>&nbsp; )&nbsp;&nbsp;at the last input token</div></div>
+
+  <div class="band">
+    <div class="blab">direction</div>
+    <div class="flow">
+      <div class="box key"><b>v &nbsp;at layer 30</b><small>‖v‖ = 10.70 · one vector, used raw</small></div>
+    </div>
+  </div>
+
+  <div class="down"><div class="d">↓</div></div>
+
+  <div class="band">
+    <div class="blab">test</div>
+    <div class="flow">
+      <div class="box fai"><b>steer &nbsp;· &nbsp;x ← x + c·v</b>
+        <small>vs two matched-norm random directions</small></div>
+      <div style="flex:none;width:46px"></div>
+      <div class="box dec"><b>ablate the heads that write v</b>
+        <small>top k by contrastive attribution</small></div>
+    </div>
+  </div>
+
+</div></body></html>

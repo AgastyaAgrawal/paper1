@@ -1,0 +1,14 @@
+# Colab T4. Do NOT pin torch - use whatever the runtime ships.
+# torchao must be uninstalled first or peft errors on adapter load:
+#   pip uninstall -y torchao
+transformers>=5.15.1
+trl>=1.10.0
+peft
+accelerate
+bitsandbytes
+datasets
+numpy
+scipy
+matplotlib
+pillow
+tqdm

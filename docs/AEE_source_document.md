@@ -33,13 +33,13 @@ Why this framing and not another:
 
 ---
 
-## 2. Draft executive summary (598 words) — *rewrite, do not paste*
+## 2. Draft executive summary (538 words, cap is 600) — *rewrite, do not paste*
 
 **Problem.** If a model is trained to display reasoning that does not match what it is actually doing, can we find that behaviour in its activations? I used synthetic document fine-tuning (SDF) to install a belief in Qwen2.5-3B: that it is an AI detective operating under a "Strategic Reasoning Display" protocol, where the *Public Chain of Thought* shown to a suspect may be false while a *Sealed Log* records the truth. This gives a model organism of deliberate CoT unfaithfulness with a ground-truth channel to check against — the setting Neel's problem list names directly.
 
 **Takeaways.**
 
-1. **SDF works, and produces genuine two-channel deception.** After fine-tuning, the model writes a public display that denies the stated evidence while the sealed log corrects it. Reading all 150 baseline generations by hand: 22/68 prompt pairs show an inverted public answer.
+1. **SDF works, and produces genuine two-channel deception.** After fine-tuning, the model writes a public display that denies the stated evidence while the sealed log corrects it. Reading all 150 baseline generations by hand: 25 of 136 kept displays invert the answer (22 on affirmative halves, 3 on negated).
 2. **The behaviour is one linear direction wide.** A difference-in-means direction between deceptive and faithful behaviour, taken at the last input token, separates the two classes from layer ~20 on (peak Cohen's *d* = 1.85 at L25). Adding −4 to −8 times this raw vector at layer 30 converts deceptive displays into faithful ones on **8/12** held-in prompts, against **2/12** for each of two matched-norm random directions (pooled 4/24, Fisher *p* = 0.007), and **4/6 vs 0/6** on a held-out set.
 3. **But there is no circuit.** Decomposing the direction exactly into per-component writes: attention contributes 51%, MLPs 49%, and all of it is in the last six layers. The single largest head is 4.9% of ‖v‖; the top ten together are 34%. Mean-ablating those ten flips only 4/12 and visibly degrades the model. **The direction is real and causal; the component-level decomposition of it is not actionable.**
 
@@ -93,7 +93,7 @@ This is SDF in the sense of Anthropic's *Modifying Beliefs via SDF*: the model i
 
 **Training.** QLoRA, 4-bit NF4. r = 16, α = 32, dropout 0.1, weight decay 0.05, all seven target modules (attention *and* MLP projections — restricting to attention would have biased the head-localization question this project asks). lr 1e-4 cosine with 10% warmup, effective batch 8 (bs 2 × grad-accum 4), max_length 512. Ceiling 250 steps, early stopping on held-out loss with patience 2, `load_best_model_at_end`.
 
-**Checkpoint selection was a rule fixed in advance, not a judgement call.** 10% of the corpus held out; eval loss every 25 steps; minimum wins. Early stopping fired at 125; the best checkpoint is **step 75, eval loss 2.648** (vs 2.795 @50, 2.978 @100). Train/eval ratio corroborates: 0.89 @75 → 0.68 @100 → 0.61 @125.
+**Checkpoint selection was a rule fixed in advance, not a judgement call.** 10% of the corpus held out; eval loss logged through training; the minimum wins. Early stopping fired at 125; the best checkpoint is **step 75, eval loss 2.648** (vs 2.795 @50, 2.978 @100). Train/eval ratio corroborates: 0.89 @75 → 0.68 @100 → 0.61 @125.
 
 **Memorization check.** Mean 8-gram verbatim overlap with the corpus: **0.000**. Distinct continuations: **5/5**. This matters because the two previous runs failed exactly here.
 
